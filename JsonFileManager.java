@@ -17,9 +17,18 @@ import java.io.IOException;
 /**
  * Created by Erick on 28/10/2016.
  */
+
 public class JsonFileManager {
 
-    protected File makeRootPath(Context context) {
+    protected Context context;
+
+    public JsonFileManager(Context context) {
+
+        this.context = context;
+    }
+
+    @Nullable
+    protected File makeRootPath() {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
@@ -31,6 +40,7 @@ public class JsonFileManager {
         return path;
     }
 
+    @NonNull
     public static Boolean checkRootPath(Context context) {
 
         File path = Environment.getExternalStorageDirectory();
@@ -39,7 +49,7 @@ public class JsonFileManager {
         return path.exists();
     }
 
-
+    @Nullable
     public static File getRootPath(Context context) {
 
         File path = Environment.getExternalStorageDirectory();
@@ -53,7 +63,8 @@ public class JsonFileManager {
     }
 
     // Funciones para crear directorios generales
-    protected File makeFolder(Context context, String folderName) {
+    @Nullable
+    protected File makeFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -65,7 +76,8 @@ public class JsonFileManager {
         return path;
     }
 
-    protected Boolean checkFolder(Context context, String folderName) {
+    @Nullable
+    protected Boolean checkFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -73,8 +85,7 @@ public class JsonFileManager {
         return path.exists();
     }
 
-
-    protected File getFolder(Context context, String folderName) {
+    protected File getFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -86,21 +97,22 @@ public class JsonFileManager {
     }
 
     // Funciones para crear archivos
-    protected File makeFile( Context context, String subFolder, String nameFile ) {
+    @Nullable
+    protected File makeFile( String subFolder, String nameFile ) {
 
         File path;
 
         if ( subFolder.compareTo("") == 0 ) {
             path = getRootPath(context);
         } else {
-            path = this.getFolder(context, subFolder);
+            path = this.getFolder(subFolder);
         }
 
-        File f = new File( path + "/" + nameFile );
-        return f;
+        return new File( path + "/" + nameFile );
     }
 
-    protected Boolean checkFile( Context context, String subFolder, String nameFile ) {
+    @Nullable
+    protected Boolean checkFile( String subFolder, String nameFile ) {
 
         File path;
 
@@ -109,7 +121,7 @@ public class JsonFileManager {
             path = getRootPath(context);
         } else {
 
-            path = this.getFolder(context, subFolder);
+            path = this.getFolder(subFolder);
         }
 
         File f = new File( path + "/" + nameFile );
@@ -118,7 +130,7 @@ public class JsonFileManager {
     }
 
     // Funciones para salvar informacion, y obtener informacion
-    protected void saveData( Context context, String subFolder, String body, String fileName ) {
+    protected void saveData( String subFolder, String body, String fileName ) {
         try {
 
             File path;
@@ -126,7 +138,7 @@ public class JsonFileManager {
             if ( subFolder.compareTo("") == 0 ) {
                 path = getRootPath(context);
             } else {
-                path = this.getFolder(context, subFolder);
+                path = this.getFolder(subFolder);
             }
 
             FileWriter file = new FileWriter( path + "/" + fileName );
@@ -138,7 +150,8 @@ public class JsonFileManager {
         }
     }
 
-    protected String getData( Context context, String subFolder, String fileName ) {
+    @Nullable
+    protected String getData( String subFolder, String fileName ) {
         try {
 
             File path;
@@ -146,7 +159,7 @@ public class JsonFileManager {
             if ( subFolder.compareTo("") == 0 ) {
                 path = getRootPath(context);
             } else {
-                path = this.getFolder(context, subFolder);
+                path = this.getFolder(subFolder);
             }
 
             File f = new File( path + "/" + fileName );
@@ -167,7 +180,7 @@ public class JsonFileManager {
     @Nullable
     public static JSONObject stringToJSON(String body ) {
 
-        JSONObject obj = null;
+        JSONObject obj;
 
         try {
             obj = new JSONObject(body);
