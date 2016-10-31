@@ -9,10 +9,16 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Created by Erick on 28/10/2016.
@@ -51,6 +57,28 @@ public class JsonFileManager {
 
     @Nullable
     public static File getRootPath(Context context) {
+
+        File path = Environment.getExternalStorageDirectory();
+        path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
+
+        if ( path.exists() ) {
+            return path;
+        }
+
+        return null;
+    }
+
+    @NonNull
+    protected Boolean checkRootPath() {
+
+        File path = Environment.getExternalStorageDirectory();
+        path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
+
+        return path.exists();
+    }
+
+    @Nullable
+    protected File getRootPath() {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
@@ -176,6 +204,46 @@ public class JsonFileManager {
         }
     }
 
+    @Nullable
+    protected String getDataFromAssets( String file_name ) {
+        try {
+            InputStream is = context.getAssets().open(file_name);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            return new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            Log.e("DXGO", "Error in Reading: " + e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+
+    @Nullable
+    protected String getDataFromAssets2( String file_name ) {
+        try {
+            InputStream is = context.getAssets().open(file_name);
+            Writer writer = new StringWriter();
+            char[] buffer = new char[1024];
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+                String jsonString = writer.toString();
+                return jsonString;
+            } finally {
+                is.close();
+            }
+        } catch (IOException e) {
+            Log.e("DXGO", "Error in Reading: " + e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    
     // Funciones de manipulacion de JSON y String
     @Nullable
     public static JSONObject stringToJSON(String body ) {
