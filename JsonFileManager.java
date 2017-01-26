@@ -1,4 +1,4 @@
-package com.appbuilders.metrotimes;
+package com.appbuilders.libraries;
 
 import android.content.Context;
 import android.os.Environment;
@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -205,7 +206,7 @@ public class JsonFileManager {
     }
 
     @Nullable
-    protected String getDataFromAssets( String file_name ) {
+    public String getDataFromAssets( String file_name ) {
         try {
             InputStream is = context.getAssets().open(file_name);
             int size = is.available();
@@ -221,7 +222,7 @@ public class JsonFileManager {
 
 
     @Nullable
-    protected String getDataFromAssets2( String file_name ) {
+    public String getDataFromAssets2( String file_name ) {
         try {
             InputStream is = context.getAssets().open(file_name);
             Writer writer = new StringWriter();
@@ -254,9 +255,21 @@ public class JsonFileManager {
             obj = new JSONObject(body);
             return obj;
         } catch( Throwable t ) {
-            Log.e("DXGO", "Couldnt parse information to JSON");
+            Log.e("DXGO", "Couldnt parse information to JSON Object");
             return null;
         }
+    }
+
+    public static JSONArray stringToJsonArray(String body) {
+
+        JSONArray array = null;
+        try {
+            array = new JSONArray(body);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("AB_DEV", "Couldnt parse information to JSON Array");
+        }
+        return array;
     }
 
     @NonNull
