@@ -22,20 +22,28 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 /**
- * Created by Erick on 28/10/2016.
+ * Created by Erick Sanchez on 28/10/2016.
+ * CEO & CTO App Builders 
  */
 
 public class JsonFileManager {
 
     protected Context context;
 
+    /**
+    * Constructor
+    * @param context: The application context
+    */
     public JsonFileManager(Context context) {
 
         this.context = context;
     }
 
+    /**
+    * Method to create root path
+    */
     @Nullable
-    protected File makeRootPath() {
+    public File makeRootPath() {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
@@ -47,15 +55,22 @@ public class JsonFileManager {
         return path;
     }
 
+    /**
+    * Static method to check if the root path exists
+    * @param context: The application context
+    */
     @NonNull
     public static Boolean checkRootPath(Context context) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
-
         return path.exists();
     }
 
+    /**
+    * Static method to get the root path
+    * @param context: The application context
+    */
     @Nullable
     public static File getRootPath(Context context) {
 
@@ -69,8 +84,28 @@ public class JsonFileManager {
         return null;
     }
 
+    /**
+    * Static method to get the root path name
+    * @param context: The application context
+    */
+    @Nullable
+    public static String getRootPath(Context context) {
+
+        File path = Environment.getExternalStorageDirectory();
+        path = new File(path.getPath() + "/Android/data/" + context.getPackageName() );
+
+        if (path.exists()) {
+            return path.toString();
+        }
+
+        return "";
+    }
+
+    /**
+    * Method to check if the root path exists
+    */
     @NonNull
-    protected Boolean checkRootPath() {
+    public Boolean checkRootPath() {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
@@ -78,8 +113,11 @@ public class JsonFileManager {
         return path.exists();
     }
 
+    /**
+    * Method to get the root path
+    */
     @Nullable
-    protected File getRootPath() {
+    public File getRootPath() {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() );
@@ -91,9 +129,12 @@ public class JsonFileManager {
         return null;
     }
 
-    // Funciones para crear directorios generales
+    /**
+    * Mehtod to create a folder into the root path
+    * @param folderName: The folder's name
+    */
     @Nullable
-    protected File makeFolder(String folderName) {
+    public File makeFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -105,8 +146,12 @@ public class JsonFileManager {
         return path;
     }
 
+    /**
+    * Method to check if a folder exists
+    * @param folderName: The folder's name
+    */
     @Nullable
-    protected Boolean checkFolder(String folderName) {
+    public Boolean checkFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -114,7 +159,11 @@ public class JsonFileManager {
         return path.exists();
     }
 
-    protected File getFolder(String folderName) {
+    /**
+    * Method to get a folder
+    * @param folderName: The folder's name
+    */
+    public File getFolder(String folderName) {
 
         File path = Environment.getExternalStorageDirectory();
         path = new File( path.getPath() + "/Android/data/" + context.getPackageName() + "/" + folderName );
@@ -125,95 +174,120 @@ public class JsonFileManager {
         return null;
     }
 
-    // Funciones para crear archivos
+    /**
+    * Method to create a file
+    * @param folderName: Folder to create the file
+    * @param fileName: Name of the file to be created
+    */
     @Nullable
-    protected File makeFile( String subFolder, String nameFile ) {
+    public File makeFile( String folderName, String fileName ) {
 
         File path;
 
-        if ( subFolder.compareTo("") == 0 ) {
-            path = getRootPath(context);
+        if ( folderName.compareTo("") == 0 || folderName.equalsTo("root") ) {
+            path = getRootPath(this.context);
         } else {
-            path = this.getFolder(subFolder);
+            path = this.getFolder(folderName);
         }
 
-        return new File( path + "/" + nameFile );
+        return new File( path + "/" + fileName );
     }
 
+    /**
+    * Method to check a file
+    * @param folderName: Folder to check the file
+    * @param fileNmae: Name of the fiel to be checked
+    */
     @Nullable
-    protected Boolean checkFile( String subFolder, String nameFile ) {
+    public Boolean checkFile( String folderName, String fileName ) {
 
         File path;
 
-        if ( subFolder.compareTo("") == 0 ) {
-
+        if ( folderName.compareTo("") == 0 || folderName.equalsTo("root") ) {
             path = getRootPath(context);
         } else {
-
-            path = this.getFolder(subFolder);
+            path = this.getFolder(folderName);
         }
 
-        File f = new File( path + "/" + nameFile );
-
+        File f = new File( path + "/" + fileName );
         return f.exists();
     }
 
-    // Funciones para salvar informacion, y obtener informacion
-    protected void saveData( String subFolder, String body, String fileName ) {
+    /**
+    * Method to save data into a file
+    * @param folderName: Folder to take the file
+    * @prama fileName: Name of the file to append the content
+    * @param content: The content to be write o append
+    */    
+    protected void saveData( String folderName, String fileName, String content ) {
+        
         try {
 
             File path;
 
-            if ( subFolder.compareTo("") == 0 ) {
+            if ( folderName.compareTo("") == 0 || folderName.equalsTo("root") ) {
                 path = getRootPath(context);
             } else {
-                path = this.getFolder(subFolder);
+                path = this.getFolder(folderName);
             }
 
             FileWriter file = new FileWriter( path + "/" + fileName );
-            file.write(body);
+            file.write(content);
             file.flush();
             file.close();
         } catch (IOException e) {
-            Log.d("DXGO", "Error in Writing: " + e.getLocalizedMessage());
+            Log.e("AB_DEV", "Error in writing: " + e.getLocalizedMessage());
         }
     }
 
+    /**
+    * Method to get saved data in a file
+    * @param folderName: Folder to take the file
+    * @prama fileName: Name of the file to read the content
+    */
     @Nullable
-    protected String getData( String subFolder, String fileName ) {
+    protected String getData( String folderName, String fileName ) {
+        
         try {
 
             File path;
 
-            if ( subFolder.compareTo("") == 0 ) {
+            if ( folderName.compareTo("") == 0 || folderName.equalsTo("root") ) {
                 path = getRootPath(context);
             } else {
-                path = this.getFolder(subFolder);
+                path = this.getFolder(folderName);
             }
 
             File f = new File( path + "/" + fileName );
-
             FileInputStream is = new FileInputStream(f);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
             return new String(buffer);
+
         } catch (IOException e) {
-            Log.e("DXGO", "Error in Reading: " + e.getLocalizedMessage());
-            return null;
+            Log.e("EB_DEV", "Error in reading: " + e.getLocalizedMessage());
         }
+
+        return null;
     }
 
+
+    /**
+    * Method to get data from assets folder
+    * @param fileName: Name of the fiel into the folder
+    * @param codification: Type of codification for file
+    */
     @Nullable
-    public String getDataFromAssets( String file_name ) {
+    public String getDataFromAssets( String fileName, String codification ) {
         try {
-            InputStream is = context.getAssets().open(file_name);
+            InputStream is = context.getAssets().open(fileName);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            return new String(buffer, "UTF-8");
+            return new String(buffer, codification);
         } catch (IOException e) {
             Log.e("DXGO", "Error in Reading: " + e.getLocalizedMessage());
             return null;
@@ -221,10 +295,24 @@ public class JsonFileManager {
     }
 
 
+    /**
+    * Method to get data from assets folder with default codification
+    * @param fileName: Name of the fiel into the folder
+    */
     @Nullable
-    public String getDataFromAssets2( String file_name ) {
+    public String getDataFromAssets( String fileName ) {
+
+        return this.getDataFromAssets(fileName, "UTF-8");
+    }
+
+    /**
+    * Method to get data from assets folder with default codification
+    * @param fileName: Name of the fiel into the folder
+    */
+    @Nullable
+    public String getDataFromAssets2( String fileName ) {
         try {
-            InputStream is = context.getAssets().open(file_name);
+            InputStream is = context.getAssets().open(fileName);
             Writer writer = new StringWriter();
             char[] buffer = new char[1024];
             try {
@@ -245,42 +333,36 @@ public class JsonFileManager {
     }
 
     
-    // Funciones de manipulacion de JSON y String
+    /**
+    * Method to convert a string into JSONObject
+    * @param content: String with the content to be JSONObject
+    */
     @Nullable
-    public static JSONObject stringToJSON(String body ) {
+    public static JSONObject stringToJSONObject(String content) {
 
-        JSONObject obj;
+        JSONObject obj = null;
 
         try {
-            obj = new JSONObject(body);
-            return obj;
+            obj = new JSONObject(content);
         } catch( Throwable t ) {
-            Log.e("DXGO", "Couldnt parse information to JSON Object");
-            return null;
+            Log.e("AB_DEV", "Couldnt parse information to JSON Object");
         }
+        return obj;
     }
 
-    public static JSONArray stringToJsonArray(String body) {
+    /**
+    * Method to convert a string into JSONArray
+    * @param content: String with the content to be JSONObject
+    */
+    public static JSONArray stringToJSONArray(String content) {
 
         JSONArray array = null;
         try {
-            array = new JSONArray(body);
+            array = new JSONArray(content);
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e("AB_DEV", "Couldnt parse information to JSON Array");
         }
         return array;
-    }
-
-    @NonNull
-    public static Boolean checkValue(JSONArray json, String key, String value ) {
-
-        return json.toString().contains("\"" + key + "\":\"" + value + "\"");
-    }
-
-    @NonNull
-    public static Boolean checkId(JSONArray json, String id ) {
-
-        return json.toString().contains("\"id\":\"" + id + "\"");
     }
 }
